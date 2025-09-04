@@ -1,0 +1,1051 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pokémon Karten Sammlung</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 30px;
+            border-radius: 20px;
+            backdrop-filter: blur(15px);
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .header h1 {
+            color: white;
+            font-size: 2.8rem;
+            margin-bottom: 15px;
+            text-shadow: 3px 3px 6px rgba(0,0,0,0.4);
+            font-weight: 900;
+            letter-spacing: 2px;
+        }
+
+        .header::before {
+            content: "";
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: conic-gradient(transparent, rgba(255,107,107,0.3), transparent 30%);
+            animation: rotate 4s linear infinite;
+            z-index: -1;
+        }
+
+        .header {
+            position: relative;
+            overflow: hidden;
+        }
+
+        @keyframes rotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .stats {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-top: 25px;
+            flex-wrap: wrap;
+        }
+
+        .stat-item {
+            background: rgba(255, 255, 255, 0.25);
+            padding: 20px 30px;
+            border-radius: 15px;
+            text-align: center;
+            color: white;
+            min-width: 130px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .stat-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        }
+
+        .stat-number {
+            font-size: 2.2rem;
+            font-weight: bold;
+            display: block;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .progress-bar-container {
+            width: 100%;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            margin: 15px 0;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #ff6b6b, #feca57, #48dbfb);
+            width: 0%;
+            transition: width 0.8s ease;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(255,107,107,0.5);
+        }
+
+        .filters {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            padding: 14px 28px;
+            border: none;
+            border-radius: 30px;
+            cursor: pointer;
+            font-size: 1.1rem;
+            font-weight: bold;
+            transition: all 0.4s ease;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+        }
+
+        .filter-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+        }
+
+        .filter-btn.active {
+            background: linear-gradient(135deg, #ff6b6b, #ff8e8e);
+            box-shadow: 0 6px 20px rgba(255, 107, 107, 0.5);
+            transform: translateY(-2px);
+        }
+
+        .search-container {
+            margin-bottom: 35px;
+            text-align: center;
+        }
+
+        .search-input {
+            padding: 18px 25px;
+            border: none;
+            border-radius: 30px;
+            width: 350px;
+            max-width: 90%;
+            font-size: 1.1rem;
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(15px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            transition: all 0.3s ease;
+        }
+
+        .search-input:focus {
+            outline: none;
+            box-shadow: 0 8px 30px rgba(255, 107, 107, 0.4);
+            transform: translateY(-2px);
+        }
+
+        .generation-section {
+            margin-bottom: 50px;
+        }
+
+        .generation-title {
+            color: white;
+            font-size: 2rem;
+            margin-bottom: 25px;
+            text-align: center;
+            text-shadow: 3px 3px 6px rgba(0,0,0,0.4);
+            font-weight: 800;
+        }
+
+        .pokemon-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 25px;
+        }
+
+        .pokemon-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+            backdrop-filter: blur(15px);
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .pokemon-card::before {
+            content: "";
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, transparent 20%, rgba(255,107,107,0.1) 50%, transparent 70%);
+            opacity: 0;
+            transition: opacity 0.4s ease;
+        }
+
+        .pokemon-card:hover::before {
+            opacity: 1;
+        }
+
+        .pokemon-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.25);
+        }
+
+        .pokemon-card.collected {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            animation: collectPulse 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes collectPulse {
+            0% { box-shadow: 0 6px 20px rgba(79,172,254,0.3); }
+            100% { box-shadow: 0 8px 30px rgba(79,172,254,0.6); }
+        }
+
+        .pokemon-card.collected::after {
+            content: "✓";
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            font-size: 1.8rem;
+            color: #fff;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.4);
+            animation: checkmark 0.6s ease-in-out;
+        }
+
+        @keyframes checkmark {
+            0% { transform: scale(0) rotate(180deg); opacity: 0; }
+            50% { transform: scale(1.2) rotate(90deg); opacity: 0.8; }
+            100% { transform: scale(1) rotate(0deg); opacity: 1; }
+        }
+
+        .pokemon-number {
+            font-weight: bold;
+            color: #666;
+            font-size: 1rem;
+            margin-bottom: 8px;
+            opacity: 0.8;
+        }
+
+        .pokemon-card.collected .pokemon-number {
+            color: rgba(255,255,255,0.9);
+        }
+
+        .pokemon-name {
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-bottom: 15px;
+            text-transform: capitalize;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+        }
+
+        .pokemon-image {
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(240, 240, 240, 0.3);
+            border-radius: 15px;
+            border: 2px solid rgba(255, 255, 255, 0.5);
+            transition: all 0.3s ease;
+        }
+
+        .pokemon-image:hover {
+            transform: scale(1.05);
+        }
+
+        .pokemon-image img {
+            width: 100px;
+            height: 100px;
+            object-fit: contain;
+            transition: all 0.3s ease;
+        }
+
+        .pokemon-card:hover .pokemon-image img {
+            transform: scale(1.1);
+        }
+
+        .pokemon-card.collected .pokemon-image {
+            background: rgba(255,255,255,0.25);
+            border-color: rgba(255,255,255,0.6);
+        }
+
+        .loading {
+            color: #888;
+            font-size: 0.9rem;
+            font-style: italic;
+        }
+
+        .type-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            margin: 2px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            color: white;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+        }
+
+        .floating-stats {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 15px;
+            border-radius: 15px;
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            font-size: 0.9rem;
+            z-index: 1000;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2.2rem;
+            }
+            
+            .stats {
+                gap: 15px;
+            }
+            
+            .stat-item {
+                padding: 15px 20px;
+                min-width: 110px;
+            }
+            
+            .filters {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .pokemon-grid {
+                grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+                gap: 20px;
+            }
+
+            .pokemon-image {
+                width: 100px;
+                height: 100px;
+            }
+
+            .pokemon-image img {
+                width: 80px;
+                height: 80px;
+            }
+
+            .floating-stats {
+                position: relative;
+                top: auto;
+                right: auto;
+                margin-bottom: 20px;
+            }
+        }
+
+        .rarity-indicator {
+            position: absolute;
+            top: 10px;
+            left: 15px;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #ffd700;
+        }
+
+        .rarity-indicator.legendary {
+            background: linear-gradient(45deg, #ff6b6b, #ffd700);
+            box-shadow: 0 0 15px rgba(255,107,107,0.5);
+            animation: legendary 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes legendary {
+            0% { transform: scale(1); }
+            100% { transform: scale(1.2); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="floating-stats" id="floating-stats">
+            <div><strong>Live Stats</strong></div>
+            <div id="live-collected">Gesammelt: 0</div>
+            <div id="live-remaining">Fehlend: 251</div>
+        </div>
+
+        <div class="header">
+            <h1>🎴 Pokémon Kartensammlung</h1>
+            <div class="progress-bar-container">
+                <div class="progress-bar" id="progress-bar"></div>
+            </div>
+            <div class="stats">
+                <div class="stat-item">
+                    <span class="stat-number" id="collected-count">0</span>
+                    <span>Gesammelt</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number" id="total-count">251</span>
+                    <span>Gesamt</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number" id="progress-percent">0%</span>
+                    <span>Fortschritt</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="search-container">
+            <input type="text" class="search-input" id="search" placeholder="🔍 Pokémon suchen...">
+        </div>
+
+        <div class="filters">
+            <button class="filter-btn active" data-filter="all">🌟 Alle</button>
+            <button class="filter-btn" data-filter="gen1">1️⃣ Generation I</button>
+            <button class="filter-btn" data-filter="gen2">2️⃣ Generation II</button>
+            <button class="filter-btn" data-filter="collected">✅ Gesammelt</button>
+            <button class="filter-btn" data-filter="missing">❌ Fehlend</button>
+            <button class="filter-btn" data-filter="legendary">👑 Legendär</button>
+        </div>
+
+        <div class="generation-section" id="gen1-section">
+            <h2 class="generation-title">🌿 Generation I (Kanto) - #001-#151</h2>
+            <div class="pokemon-grid" id="gen1-grid"></div>
+        </div>
+
+        <div class="generation-section" id="gen2-section">
+            <h2 class="generation-title">🌸 Generation II (Johto) - #152-#251</h2>
+            <div class="pokemon-grid" id="gen2-grid"></div>
+        </div>
+    </div>
+
+    <script>
+        const pokemonData = {
+            gen1: [
+                "Bisasam", "Bisaknosp", "Bisaflor", "Glumanda", "Glutexo", "Glurak", "Schiggy", "Schillok", "Turtok", "Raupy",
+                "Safcon", "Smettbo", "Hornliu", "Kokuna", "Bibor", "Taubsi", "Tauboga", "Tauboss", "Rattfratz", "Rattikarl",
+                "Habitak", "Ibitak", "Rettan", "Arbok", "Pikachu", "Raichu", "Sandan", "Sandamer", "Nidoran♀", "Nidorina",
+                "Nidoqueen", "Nidoran♂", "Nidorino", "Nidoking", "Piepi", "Pixi", "Vulpix", "Vulnona", "Pummeluff", "Knuddeluff",
+                "Zubat", "Golbat", "Myrapla", "Duflor", "Giflor", "Paras", "Parasek", "Bluzuk", "Omot", "Digda",
+                "Digdri", "Mauzi", "Snobilikat", "Enton", "Entoron", "Menki", "Rasaff", "Fukano", "Arkani", "Quapsel",
+                "Quaputzi", "Quappo", "Abra", "Kadabra", "Simsala", "Machollo", "Maschock", "Machomei", "Knofensa", "Ultrigaria",
+                "Sarzenia", "Tentacha", "Tentoxa", "Kleinstein", "Georok", "Geowaz", "Ponita", "Gallopa", "Flegmon", "Lahmus",
+                "Magnetilo", "Magneton", "Porenta", "Dodu", "Dodri", "Jurob", "Jugong", "Sleima", "Sleimok", "Muschas",
+                "Austos", "Nebulak", "Alpollo", "Gengar", "Onix", "Traumato", "Hypno", "Krabby", "Kingler", "Voltobal",
+                "Lektrobal", "Owei", "Kokowei", "Tragosso", "Knogga", "Kicklee", "Nockchan", "Schlurp", "Smogon", "Smogmog",
+                "Rihorn", "Rizeros", "Chaneira", "Tangela", "Kangama", "Seeper", "Seemon", "Goldini", "Golking", "Sterndu",
+                "Starmie", "Pantimos", "Sichlor", "Rossana", "Elektek", "Magmar", "Pinsir", "Tauros", "Karpador", "Garados",
+                "Lapras", "Ditto", "Evoli", "Aquana", "Blitza", "Flamara", "Porygon", "Amonitas", "Amoroso", "Kabuto",
+                "Kabutops", "Aerodactyl", "Relaxo", "Arktos", "Zapdos", "Lavados", "Dratini", "Dragonir", "Dragoran", "Mewtu", "Mew"
+            ],
+            gen2: [
+                "Endivie", "Lorblatt", "Meganie", "Feurigel", "Igelavar", "Tornupto", "Karnimani", "Tyracroc", "Impergator", "Wiesor",
+                "Wiesenior", "Hoothoot", "Noctuh", "Ledyba", "Ledian", "Webarak", "Ariados", "Iksbat", "Lampi", "Lanturn",
+                "Pichu", "Pii", "Fluffeluff", "Togepi", "Togetic", "Natu", "Xatu", "Voltilamm", "Waaty", "Ampharos",
+                "Blubella", "Marill", "Azumarill", "Mogelbaum", "Quaxo", "Hoppspross", "Hubelupf", "Papungha", "Griffel", "Sonnkern",
+                "Sonnflora", "Yanma", "Felino", "Morlord", "Psiana", "Nachtara", "Kramurx", "Laschoking", "Traunfugil", "Icognito",
+                "Woingenau", "Girafarig", "Tannza", "Forstellka", "Dummisel", "Skorgla", "Stahlos", "Snubbull", "Granbull", "Baldorfish",
+                "Scherox", "Pottrott", "Skaraborn", "Sniebel", "Teddiursa", "Ursaring", "Schneckmag", "Magcargo", "Quiekel", "Keifel",
+                "Corasonn", "Remoraid", "Octillery", "Botogel", "Mantax", "Panzaeron", "Hunduster", "Hundemon", "Seedraking", "Phanpy",
+                "Donphan", "Porygon2", "Damhirplex", "Farbeagle", "Rabauz", "Kapoera", "Kussilla", "Elekid", "Magby", "Miltank",
+                "Heiteira", "Raikou", "Entei", "Suicune", "Larvitar", "Pupitar", "Despotar", "Lugia", "Ho-Oh", "Celebi"
+            ]
+        };
+
+        // Legendary Pokémon numbers
+        const legendaryPokemon = new Set([144, 145, 146, 150, 151, 243, 244, 245, 249, 250, 251]);
+
+        let collectedPokemon = new Set();
+        let currentFilter = 'all';
+        let searchTerm = '';
+
+        function initializeApp() {
+            createPokemonCards();
+            updateStats();
+            setupEventListeners();
+            startStatsAnimation();
+        }
+
+        function startStatsAnimation() {
+            setInterval(() => {
+                updateLiveStats();
+            }, 1000);
+        }
+
+        function updateLiveStats() {
+            const totalCount = pokemonData.gen1.length + pokemonData.gen2.length;
+            const collectedCount = collectedPokemon.size;
+            const remainingCount = totalCount - collectedCount;
+
+            document.getElementById('live-collected').textContent = `Gesammelt: ${collectedCount}`;
+            document.getElementById('live-remaining').textContent = `Fehlend: ${remainingCount}`;
+        }
+
+        function createPokemonCards() {
+            const gen1Grid = document.getElementById('gen1-grid');
+            const gen2Grid = document.getElementById('gen2-grid');
+
+            gen1Grid.innerHTML = '';
+            gen2Grid.innerHTML = '';
+
+            // Generation 1 (1-151)
+            pokemonData.gen1.forEach((name, index) => {
+                const pokemonNumber = index + 1;
+                const card = createPokemonCard(name, pokemonNumber, 1);
+                gen1Grid.appendChild(card);
+            });
+
+            // Generation 2 (152-251)
+            pokemonData.gen2.forEach((name, index) => {
+                const pokemonNumber = index + 152;
+                const card = createPokemonCard(name, pokemonNumber, 2);
+                gen2Grid.appendChild(card);
+            });
+        }
+
+        function createPokemonCard(name, number, generation) {
+            const card = document.createElement('div');
+            card.className = 'pokemon-card';
+            card.dataset.number = number;
+            card.dataset.generation = generation;
+            card.dataset.name = name.toLowerCase();
+
+            const isCollected = collectedPokemon.has(number);
+            const isLegendary = legendaryPokemon.has(number);
+
+            if (isCollected) {
+                card.classList.add('collected');
+            }
+
+            const rarityIndicator = isLegendary ? 
+                '<div class="rarity-indicator legendary"></div>' : 
+                '<div class="rarity-indicator"></div>';
+
+            card.innerHTML = `
+                ${rarityIndicator}
+                <div class="pokemon-number">#${String(number).padStart(3, '0')}</div>
+                <div class="pokemon-image">
+                    <div class="loading">Lädt Bild...</div>
+                </div>
+                <div class="pokemon-name">${name}</div>
+            `;
+
+            // Load Pokemon image with multiple fallback sources
+            loadPokemonImage(card, number, name);
+
+            card.addEventListener('click', () => toggleCollection(number, card));
+
+            return card;
+        }
+
+        function loadPokemonImage(card, number, name) {
+            const imageContainer = card.querySelector('.pokemon-image');
+            
+            // Array of image sources to try
+            const imageSources = [
+                `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${number}.png`,
+                `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${number}.png`,
+                `https://assets.pokemon.com/assets/cms2/img/pokedex/detail/${String(number).padStart(3, '0')}.png`,
+                `https://img.pokemondb.net/sprites/home/normal/${name.toLowerCase().replace(/[♀♂]/g, '').replace(' ', '-')}.png`,
+                `https://pokeres.bastionbot.org/images/pokemon/${number}.png`
+            ];
+            
+            let currentIndex = 0;
+            
+            function tryLoadImage() {
+                if (currentIndex >= imageSources.length) {
+                    // All sources failed, show creative placeholder
+                    showImagePlaceholder(imageContainer, name, number);
+                    return;
+                }
+                
+                const img = new Image();
+                img.crossOrigin = 'anonymous'; // Try to handle CORS
+                
+                img.onload = function() {
+                    console.log(`✅ Image loaded successfully: ${imageSources[currentIndex]}`);
+                    imageContainer.innerHTML = '';
+                    img.style.cssText = `
+                        width: 100px; 
+                        height: 100px; 
+                        object-fit: contain; 
+                        transition: all 0.3s ease;
+                        image-rendering: auto;
+                    `;
+                    imageContainer.appendChild(img);
+                };
+                
+                img.onerror = function(e) {
+                    console.log(`❌ Image failed to load: ${imageSources[currentIndex]}`, e);
+                    currentIndex++;
+                    setTimeout(tryLoadImage, 100); // Small delay before trying next source
+                };
+                
+                // Add loading timeout
+                setTimeout(() => {
+                    if (!img.complete) {
+                        console.log(`⏰ Image loading timeout: ${imageSources[currentIndex]}`);
+                        currentIndex++;
+                        tryLoadImage();
+                    }
+                }, 5000);
+                
+                img.src = imageSources[currentIndex];
+                img.alt = name;
+            }
+            
+            // Start loading
+            tryLoadImage();
+        }
+        
+        function showImagePlaceholder(container, name, number) {
+            // Create a more attractive placeholder with Pokemon-themed design
+            const pokemonColors = {
+                1: '#78C850', 4: '#F08030', 7: '#6890F0', 25: '#F8D030', 
+                144: '#98D8D8', 145: '#F8D030', 146: '#F08030', 150: '#A040A0', 151: '#FB1B69'
+            };
+            
+            const color = pokemonColors[number] || '#A8A878';
+            const isLegendary = legendaryPokemon.has(number);
+            
+            container.innerHTML = `
+                <div style="
+                    display: flex; 
+                    flex-direction: column; 
+                    align-items: center; 
+                    justify-content: center; 
+                    height: 100%; 
+                    width: 100%;
+                    background: linear-gradient(135deg, ${color}20, ${color}40);
+                    border-radius: 15px;
+                    border: 2px solid ${color}60;
+                    position: relative;
+                    overflow: hidden;
+                ">
+                    <div style="
+                        position: absolute;
+                        top: -50%;
+                        left: -50%;
+                        width: 200%;
+                        height: 200%;
+                        background: radial-gradient(circle, transparent 30%, ${color}10 50%, transparent 70%);
+                        animation: rotate 8s linear infinite;
+                    "></div>
+                    <div style="
+                        font-size: ${isLegendary ? '2.5rem' : '2rem'}; 
+                        margin-bottom: 8px;
+                        filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.3));
+                        z-index: 2;
+                    ">${isLegendary ? '👑' : '🎴'}</div>
+                    <div style="
+                        font-size: 0.75rem; 
+                        color: #666; 
+                        text-align: center;
+                        font-weight: bold;
+                        text-shadow: 1px 1px 2px rgba(255,255,255,0.8);
+                        z-index: 2;
+                    ">#${String(number).padStart(3, '0')}</div>
+                    <div style="
+                        font-size: 0.7rem; 
+                        color: #888; 
+                        text-align: center;
+                        margin-top: 4px;
+                        z-index: 2;
+                    ">Bild nicht verfügbar</div>
+                </div>
+            `;
+        }
+
+        function toggleCollection(number, card) {
+            if (collectedPokemon.has(number)) {
+                collectedPokemon.delete(number);
+                card.classList.remove('collected');
+                showNotification(`${card.querySelector('.pokemon-name').textContent} aus Sammlung entfernt! 😔`, 'remove');
+            } else {
+                collectedPokemon.add(number);
+                card.classList.add('collected');
+                showNotification(`${card.querySelector('.pokemon-name').textContent} zur Sammlung hinzugefügt! 🎉`, 'add');
+                
+                // Special effects for legendary Pokemon
+                if (legendaryPokemon.has(number)) {
+                    showNotification(`Legendäres Pokémon gefangen! 👑✨`, 'legendary');
+                }
+            }
+            updateStats();
+            updateLiveStats();
+        }
+
+        function showNotification(message, type) {
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 100px;
+                right: 30px;
+                background: ${type === 'legendary' ? 'linear-gradient(135deg, #ffd700, #ff6b6b)' : 
+                            type === 'add' ? 'linear-gradient(135deg, #4facfe, #00f2fe)' : 
+                            'linear-gradient(135deg, #ff6b6b, #ff8e8e)'};
+                color: white;
+                padding: 15px 20px;
+                border-radius: 10px;
+                box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+                z-index: 10000;
+                font-weight: bold;
+                transform: translateX(400px);
+                transition: all 0.5s ease;
+                backdrop-filter: blur(10px);
+                border: 1px solid rgba(255,255,255,0.3);
+            `;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+
+            setTimeout(() => {
+                notification.style.transform = 'translateX(0)';
+            }, 100);
+
+            setTimeout(() => {
+                notification.style.transform = 'translateX(400px)';
+                setTimeout(() => {
+                    document.body.removeChild(notification);
+                }, 500);
+            }, 3000);
+        }
+
+        function updateStats() {
+            const totalCount = pokemonData.gen1.length + pokemonData.gen2.length;
+            const collectedCount = collectedPokemon.size;
+            const progressPercent = Math.round((collectedCount / totalCount) * 100);
+
+            // Animate number changes
+            animateNumber('collected-count', collectedCount);
+            animateNumber('progress-percent', progressPercent, '%');
+            
+            // Update progress bar
+            const progressBar = document.getElementById('progress-bar');
+            progressBar.style.width = progressPercent + '%';
+            
+            // Change progress bar color based on completion
+            if (progressPercent === 100) {
+                progressBar.style.background = 'linear-gradient(90deg, #ffd700, #ffed4a, #ffd700)';
+                progressBar.style.animation = 'pulse 2s ease-in-out infinite alternate';
+                showNotification('🎉 GLÜCKWUNSCH! Du hast alle 251 Pokémon gesammelt! 🎉', 'legendary');
+            } else if (progressPercent >= 75) {
+                progressBar.style.background = 'linear-gradient(90deg, #4facfe, #00f2fe)';
+            } else if (progressPercent >= 50) {
+                progressBar.style.background = 'linear-gradient(90deg, #feca57, #ff9ff3)';
+            } else {
+                progressBar.style.background = 'linear-gradient(90deg, #ff6b6b, #feca57, #48dbfb)';
+            }
+        }
+
+        function animateNumber(elementId, targetValue, suffix = '') {
+            const element = document.getElementById(elementId);
+            const currentValue = parseInt(element.textContent) || 0;
+            const increment = targetValue > currentValue ? 1 : -1;
+            const duration = Math.abs(targetValue - currentValue) * 50;
+
+            if (currentValue === targetValue) return;
+
+            const timer = setInterval(() => {
+                const current = parseInt(element.textContent) || 0;
+                if ((increment > 0 && current >= targetValue) || (increment < 0 && current <= targetValue)) {
+                    element.textContent = targetValue + suffix;
+                    clearInterval(timer);
+                } else {
+                    element.textContent = (current + increment) + suffix;
+                }
+            }, duration / Math.abs(targetValue - currentValue));
+        }
+
+        function filterPokemon() {
+            const cards = document.querySelectorAll('.pokemon-card');
+            const gen1Section = document.getElementById('gen1-section');
+            const gen2Section = document.getElementById('gen2-section');
+
+            let showGen1 = false;
+            let showGen2 = false;
+
+            cards.forEach(card => {
+                const number = parseInt(card.dataset.number);
+                const generation = parseInt(card.dataset.generation);
+                const name = card.dataset.name;
+                const isCollected = collectedPokemon.has(number);
+                const isLegendary = legendaryPokemon.has(number);
+
+                let showCard = false;
+
+                // Filter by generation/collection status
+                switch (currentFilter) {
+                    case 'all':
+                        showCard = true;
+                        break;
+                    case 'gen1':
+                        showCard = generation === 1;
+                        break;
+                    case 'gen2':
+                        showCard = generation === 2;
+                        break;
+                    case 'collected':
+                        showCard = isCollected;
+                        break;
+                    case 'missing':
+                        showCard = !isCollected;
+                        break;
+                    case 'legendary':
+                        showCard = isLegendary;
+                        break;
+                }
+
+                // Filter by search term
+                if (showCard && searchTerm) {
+                    showCard = name.includes(searchTerm.toLowerCase()) || 
+                              String(number).padStart(3, '0').includes(searchTerm);
+                }
+
+                card.style.display = showCard ? 'block' : 'none';
+
+                if (showCard) {
+                    if (generation === 1) showGen1 = true;
+                    if (generation === 2) showGen2 = true;
+                }
+            });
+
+            gen1Section.style.display = showGen1 ? 'block' : 'none';
+            gen2Section.style.display = showGen2 ? 'block' : 'none';
+        }
+
+        function setupEventListeners() {
+            // Filter buttons
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    currentFilter = btn.dataset.filter;
+                    filterPokemon();
+                    
+                    // Show filter notification
+                    const filterNames = {
+                        'all': 'Alle Pokémon',
+                        'gen1': 'Generation I (Kanto)',
+                        'gen2': 'Generation II (Johto)',
+                        'collected': 'Gesammelte Pokémon',
+                        'missing': 'Fehlende Pokémon',
+                        'legendary': 'Legendäre Pokémon'
+                    };
+                    showNotification(`Filter: ${filterNames[currentFilter]} 🔍`, 'add');
+                });
+            });
+
+            // Search input
+            document.getElementById('search').addEventListener('input', (e) => {
+                searchTerm = e.target.value;
+                filterPokemon();
+            });
+
+            // Keyboard shortcuts
+            document.addEventListener('keydown', (e) => {
+                if (e.ctrlKey || e.metaKey) {
+                    switch(e.key) {
+                        case '1':
+                            e.preventDefault();
+                            document.querySelector('[data-filter="gen1"]').click();
+                            break;
+                        case '2':
+                            e.preventDefault();
+                            document.querySelector('[data-filter="gen2"]').click();
+                            break;
+                        case 'a':
+                            e.preventDefault();
+                            document.querySelector('[data-filter="all"]').click();
+                            break;
+                        case 'f':
+                            e.preventDefault();
+                            document.getElementById('search').focus();
+                            break;
+                    }
+                }
+            });
+
+            // Show keyboard shortcuts notification on load
+            setTimeout(() => {
+                showNotification('💡 Tipp: Verwende Strg+1/2/A für Filter, Strg+F für Suche', 'add');
+            }, 2000);
+        }
+
+        function saveToLocalStorage() {
+            // Note: localStorage not available in Claude artifacts
+            // In a real environment, this would save the collection
+            try {
+                if (typeof localStorage !== 'undefined') {
+                    localStorage.setItem('pokemonCollection', JSON.stringify([...collectedPokemon]));
+                }
+            } catch (e) {
+                console.log('localStorage not available');
+            }
+        }
+
+        function loadFromLocalStorage() {
+            // Note: localStorage not available in Claude artifacts
+            try {
+                if (typeof localStorage !== 'undefined') {
+                    const saved = localStorage.getItem('pokemonCollection');
+                    if (saved) {
+                        collectedPokemon = new Set(JSON.parse(saved));
+                    }
+                }
+            } catch (e) {
+                console.log('Could not load from localStorage');
+                // For demo purposes, add some sample collected Pokemon
+                collectedPokemon = new Set([1, 4, 7, 25, 144, 150, 151, 152, 155, 158, 249, 250, 251]);
+            }
+        }
+
+        function exportCollection() {
+            const exportData = {
+                collectedPokemon: [...collectedPokemon],
+                totalCollected: collectedPokemon.size,
+                completionPercentage: Math.round((collectedPokemon.size / 251) * 100),
+                exportDate: new Date().toISOString(),
+                generationBreakdown: {
+                    gen1: [...collectedPokemon].filter(num => num <= 151).length,
+                    gen2: [...collectedPokemon].filter(num => num > 151).length
+                },
+                legendaryCollected: [...collectedPokemon].filter(num => legendaryPokemon.has(num)).length
+            };
+
+            const dataStr = JSON.stringify(exportData, null, 2);
+            const dataBlob = new Blob([dataStr], {type: 'application/json'});
+            const url = URL.createObjectURL(dataBlob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = 'pokemon_sammlung.json';
+            link.click();
+            URL.revokeObjectURL(url);
+            
+            showNotification('📁 Sammlung exportiert!', 'add');
+        }
+
+        // Add export button to header
+        function addExportButton() {
+            const header = document.querySelector('.header');
+            const exportBtn = document.createElement('button');
+            exportBtn.innerHTML = '📁 Sammlung exportieren';
+            exportBtn.style.cssText = `
+                margin-top: 20px;
+                padding: 12px 24px;
+                border: none;
+                border-radius: 25px;
+                background: rgba(255, 255, 255, 0.3);
+                color: white;
+                font-weight: bold;
+                cursor: pointer;
+                transition: all 0.3s ease;
+                backdrop-filter: blur(10px);
+                border: 1px solid rgba(255, 255, 255, 0.3);
+            `;
+            exportBtn.addEventListener('click', exportCollection);
+            exportBtn.addEventListener('mouseenter', () => {
+                exportBtn.style.background = 'rgba(255, 255, 255, 0.4)';
+                exportBtn.style.transform = 'translateY(-2px)';
+            });
+            exportBtn.addEventListener('mouseleave', () => {
+                exportBtn.style.background = 'rgba(255, 255, 255, 0.3)';
+                exportBtn.style.transform = 'translateY(0)';
+            });
+            header.appendChild(exportBtn);
+        }
+
+        // Add some CSS animations
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes pulse {
+                0% { box-shadow: 0 0 20px rgba(255,215,0,0.5); }
+                100% { box-shadow: 0 0 30px rgba(255,215,0,0.8); }
+            }
+            
+            .pokemon-card.collected {
+                animation: collectPulse 3s ease-in-out infinite alternate;
+            }
+            
+            .search-input:focus {
+                animation: searchFocus 0.5s ease-in-out;
+            }
+            
+            @keyframes searchFocus {
+                0% { transform: scale(1); }
+                50% { transform: scale(1.02); }
+                100% { transform: scale(1); }
+            }
+            
+            .filter-btn.active {
+                animation: filterActive 0.5s ease-in-out;
+            }
+            
+            @keyframes filterActive {
+                0% { transform: scale(1); }
+                50% { transform: scale(1.1); }
+                100% { transform: scale(1); }
+            }
+        `;
+        document.head.appendChild(style);
+
+        // Initialize the app when the page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            loadFromLocalStorage();
+            initializeApp();
+            addExportButton();
+            
+            // Welcome message
+            setTimeout(() => {
+                const totalPokemon = pokemonData.gen1.length + pokemonData.gen2.length;
+                showNotification(`🎮 Willkommen! Sammle alle ${totalPokemon} Pokémon!`, 'legendary');
+            }, 1000);
+        });
+
+        // Auto-save when collection changes
+        setInterval(() => {
+            saveToLocalStorage();
+        }, 30000); // Save every 30 seconds
+    </script>
+</body>
+</html>
